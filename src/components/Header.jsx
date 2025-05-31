@@ -5,7 +5,7 @@ import { faCloud } from '@fortawesome/free-solid-svg-icons';
 function Header() {
   return (
     <header className="header">
-      <h1>Badminton Hub</h1>
+      <h1>Shuttl</h1>
       <nav>
         <ul>
           <li>
