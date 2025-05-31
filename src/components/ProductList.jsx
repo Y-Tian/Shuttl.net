@@ -1,5 +1,6 @@
 import React from 'react';
 import CompactProductCard from './CompactProductCard';
+import ProductCard from './ProductCard'; // Import ProductCard if needed for detailed view
 
 function ProductList({ products, categoryTitle }) {
   return (

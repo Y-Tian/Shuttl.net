@@ -6,8 +6,8 @@ import { faFire, faShieldHalved, faWeightHanging, faGripLines, faRulerCombined, 
 function ProductCard({ racket }) {
   // Helper function to map racket type to an icon
   const getTypeIcon = (type) => {
-    if (type.includes("Offensive") || type.includes("Power")) return faFire;
-    if (type.includes("Defensive") || type.includes("Speed")) return faShieldHalved;
+    if ((type || "").includes("Offensive") || (type || "").includes("Power")) return faFire;
+    if ((type || "").includes("Defensive") || (type || "").includes("Speed")) return faShieldHalved;
     return faRulerCombined; // All-around/Control
   };
 

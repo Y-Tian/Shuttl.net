@@ -1,6 +1,6 @@
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFire, faShieldHalved, faGripLines, faRulerCombined } from '@fortawesome/free-solid-svg-icons';
+import { faFire, faShieldHalved, faGripLines, faWeightHanging, faRulerCombined } from '@fortawesome/free-solid-svg-icons';
 
 function CompactProductCard({ racket }) {
   // Helper function to map racket type to an icon
@@ -16,7 +16,6 @@ function CompactProductCard({ racket }) {
         <span className="card-year">{racket.Year}</span>
         <h3 className="card-title">{racket["Sub-Model(s)"]}</h3>
       </div>
-      <p className="card-series">{racket["Model Series"]}</p>
       <div className="card-specs">
         <div className="spec-item">
           <FontAwesomeIcon icon={getTypeIcon(racket.Type)} />
@@ -25,6 +24,10 @@ function CompactProductCard({ racket }) {
         <div className="spec-item">
           <FontAwesomeIcon icon={faGripLines} />
           <span>{racket.Flex}</span>
+        </div>
+        <div className="spec-item">
+          <FontAwesomeIcon icon={faWeightHanging} />
+          <span>Weight: {racket["Weight (U)"]}</span>
         </div>
       </div>
       <span className="card-price-tier">{racket["General Price Tier"]}</span>

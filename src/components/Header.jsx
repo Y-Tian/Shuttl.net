@@ -5,7 +5,7 @@ import { faCloud } from '@fortawesome/free-solid-svg-icons';
 function Header() {
   return (
     <header className="header">
-      <h1>Yonex Hub</h1>
+      <h1>Shuttl</h1>
       <nav>
         <ul>
           <li>
@@ -20,12 +20,12 @@ function Header() {
           </li>
           <li>
             <a href="#">
-              <FontAwesomeIcon icon={faCloud} /> Shuttles
+              <FontAwesomeIcon icon={faCloud} /> Bags
             </a>
           </li>
           <li>
             <a href="#">
-              <FontAwesomeIcon icon={faCloud} /> Bags
+              <FontAwesomeIcon icon={faCloud} /> Shuttles
             </a>
           </li>
         </ul>
