@@ -8,11 +8,11 @@ import { GOOGLE_SHEETS_DB_URL } from './config/constants';
 
 // Helper functions (unchanged)
 const getUniqueYears = (data) => {
-  const years = [...new Set(data.map(racket => racket.Year))].sort((a, b) => b - a);
+  const years = [...new Set(data.map(racket => racket.year))].sort((a, b) => b - a);
   return ["All Years", ...years];
 };
 const getUniqueBrands = (data) => {
-  const brands = [...new Set(data.map(racket => racket.Brand))].sort();
+  const brands = [...new Set(data.map(racket => racket.brand))].sort();
   return brands;
 };
 
@@ -50,8 +50,8 @@ function App() {
   }, [allAvailableBrands]);
 
   const filteredRackets = allRacketsData.filter(racket => {
-    const matchesYear = selectedYear === "All Years" || racket.Year === selectedYear;
-    const matchesBrand = selectedBrands.length === 0 || selectedBrands.includes(racket.Brand);
+    const matchesYear = selectedYear === "All Years" || racket.year === selectedYear;
+    const matchesBrand = selectedBrands.length === 0 || selectedBrands.includes(racket.brand);
     return matchesYear && matchesBrand;
   });
 

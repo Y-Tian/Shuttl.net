@@ -13,8 +13,8 @@ function CompactProductCard({ racket }) {
   return (
     <div className="compact-product-card">
       <div className="card-header">
-        <span className="card-year">{racket.Year}</span>
-        <h3 className="card-title">{racket["Sub-Model(s)"]}</h3>
+        <span className="card-year">{racket.year}</span>
+        <h3 className="card-title">{racket.subModel}</h3>
       </div>
       <div className="card-specs">
         <div className="spec-item">
@@ -23,14 +23,14 @@ function CompactProductCard({ racket }) {
         </div>
         <div className="spec-item">
           <FontAwesomeIcon icon={faGripLines} />
-          <span>{racket.Flex}</span>
+          <span>{racket.flex}</span>
         </div>
         <div className="spec-item">
           <FontAwesomeIcon icon={faWeightHanging} />
-          <span>Weight: {racket["Weight (U)"]}</span>
+          <span>Weight: {racket.weights}</span>
         </div>
       </div>
-      <span className="card-price-tier">{racket["General Price Tier"]}</span>
+      <span className="card-price-tier">{racket.priceTier}</span>
       {/* Future: Add an onClick handler here to open a detailed modal */}
     </div>
   );
