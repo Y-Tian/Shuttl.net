@@ -13,9 +13,9 @@ function ProductCard({ racket }) {
 
   return (
     <div className="product-card">
-      <h3>{racket["Sub-Model(s)"]}</h3>
-      <p><strong>Series:</strong> {racket["Model Series"]}</p>
-      <p><strong>Year:</strong> {racket.Year}</p>
+      <h3>{racket.subModel}</h3>
+      <p><strong>Series:</strong> {racket.model}</p>
+      <p><strong>Year:</strong> {racket.year}</p>
 
       <div className="specs-grid">
         <div className="spec-item">
@@ -24,31 +24,31 @@ function ProductCard({ racket }) {
         </div>
         <div className="spec-item">
           <FontAwesomeIcon icon={faGripLines} />
-          <span>Flex: {racket.Flex}</span>
+          <span>Flex: {racket.flex}</span>
         </div>
         <div className="spec-item">
           <FontAwesomeIcon icon={faWeightHanging} />
-          <span>Weight: {racket["Weight (U)"]}</span>
+          <span>Weight: {racket.weights}</span>
         </div>
         <div className="spec-item">
           <FontAwesomeIcon icon={faRulerCombined} />
-          <span>Tension: {racket["Recommended Tension (Max Lbs)"]} lbs Max</span>
+          <span>Tension: {racket.recommendedTension} lbs Max</span>
         </div>
         <div className="spec-item">
           <FontAwesomeIcon icon={faLocationDot} />
-          <span>Made in {racket["Manufacturing Country"]}</span>
+          <span>Made in {racket.manufacturingCountry}</span>
         </div>
       </div>
       
-      <p className="price-tier">Price Tier: {racket["General Price Tier"]}</p>
+      <p className="price-tier">Price Tier: {racket.priceTier}</p>
 
-      {racket["Primary Paint Color Variation(s)"] !== "N/A" && (
-        <p><strong>Colors:</strong> {racket["Primary Paint Color Variation(s)"]}</p>
+      {racket.primaryColour !== "N/A" && (
+        <p><strong>Colors:</strong> {racket.primaryColour}</p>
       )}
-      {racket["Signature Player"] !== "N/A" && (
-        <p><strong>Signature Player:</strong> {racket["Signature Player"]}</p>
+      {racket.signaturePlayers !== "N/A" && (
+        <p><strong>Signature Player:</strong> {racket.signaturePlayers}</p>
       )}
-      <p className="notes">{racket["Notes/Key Technologies"]}</p>
+      <p className="notes">{racket.notes}</p>
     </div>
   );
 }
