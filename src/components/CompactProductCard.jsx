@@ -19,7 +19,7 @@ function CompactProductCard({ racket }) {
       </div>
       <div>
         {/* TODO: add a class for product icons */}
-        <img src={`${CLOUDFLARE_IMAGES_TRANSFORM_BASE_URL}${MINI_ICON_TRANSFORM}${racket.r2ImageSlugFull}`} alt={`${racket.subModel} mini icon`} className="product-mini-icon" loading="lazy" />
+        <img src={`${CLOUDFLARE_IMAGES_TRANSFORM_BASE_URL}${MINI_ICON_TRANSFORM}${racket.r2ImageSlugFull}`} alt={`${racket.year} ${racket.brand} ${racket.model} ${racket.subModel} mini icon badminton racket`} className="product-mini-icon" loading="lazy" />
       </div>
       <div className="card-specs">
         <div className="spec-item">
