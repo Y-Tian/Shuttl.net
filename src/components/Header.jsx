@@ -1,6 +1,6 @@
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCloud } from '@fortawesome/free-solid-svg-icons';
+import { faChevronRight, faShoePrints, faBagShopping, faFeather } from '@fortawesome/free-solid-svg-icons';
 
 function Header() {
   return (
@@ -10,22 +10,22 @@ function Header() {
         <ul>
           <li>
             <a href="#" className="active">
-              <FontAwesomeIcon icon={faCloud} /> Rackets
+              <FontAwesomeIcon icon={faChevronRight} /> Rackets
             </a>
           </li>
           <li>
             <a href="#">
-              <FontAwesomeIcon icon={faCloud} /> Shoes
+              <FontAwesomeIcon icon={faShoePrints} /> Shoes
             </a>
           </li>
           <li>
             <a href="#">
-              <FontAwesomeIcon icon={faCloud} /> Bags
+              <FontAwesomeIcon icon={faBagShopping} /> Bags
             </a>
           </li>
           <li>
             <a href="#">
-              <FontAwesomeIcon icon={faCloud} /> Shuttles
+              <FontAwesomeIcon icon={faFeather} /> Shuttles
             </a>
           </li>
         </ul>

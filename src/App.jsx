@@ -45,7 +45,6 @@ function App() {
   useEffect(() => {
     if (selectedBrands.length === 0 && allAvailableBrands.length > 0) {
       setSelectedBrands(allAvailableBrands);
-      console.log(setSelectedBrands);
     }
   }, [allAvailableBrands]);
 
