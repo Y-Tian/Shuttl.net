@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Papa from 'papaparse';
 import Header from './components/Header';
+import Footer from './components/Footer';
 import YearSelector from './components/YearSelector';
 import BrandSelector from './components/BrandSelector';
 import ProductList from './components/ProductList';
@@ -79,6 +80,7 @@ function App() {
         </div>
         <ProductList products={filteredRackets} categoryTitle={`Badminton Rackets (${selectedYear})`} />
       </main>
+      <Footer />
     </>
   );
 }
