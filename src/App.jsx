@@ -53,6 +53,11 @@ function App() {
     const matchesYear = selectedYear === "All Years" || racket.year === selectedYear;
     const matchesBrand = selectedBrands.length === 0 || selectedBrands.includes(racket.brand);
     return matchesYear && matchesBrand;
+  }).sort((a, b) => {
+    if (selectedYear === "All Years") {
+      return b.year - a.year;
+    }
+    return 0;
   });
 
    if (loading) return (
