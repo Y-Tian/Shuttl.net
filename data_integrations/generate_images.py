@@ -5,14 +5,19 @@ import io
 from random import uniform
 import time
 from datetime import datetime
+import boto3
+import os
 
 """
 TODO:
-- rotate image 90 degrees clockwise
-- resize image to be consistent
-- automatically upload to cloudflare r2 using s3 api
 - add watermark to image
 """
+
+# Cloudflare R2 Configuration - set as environment variables
+AWS_ACCESS_KEY_ID = os.environ.get("AWS_ACCESS_KEY_ID")
+AWS_SECRET_ACCESS_KEY = os.environ.get("AWS_SECRET_ACCESS_KEY")
+CLOUDFLARE_ACCOUNT_ID = os.environ.get("CLOUDFLARE_ACCOUNT_ID")
+BUCKET_NAME = "shuttl"
 
 def pull_dataset():
     url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSdzzVMPVgDhJ06QHuf93MI8aCm7l3o9RDhTGcXILjrAwEBbDP63iWRZdOZ7773JZOqMOz3c6Xs0ksk/pub?output=csv"
@@ -43,6 +48,24 @@ def asset_index_builder(dataset):
         asset_indexes.append(asset_payload)
 
     return asset_indexes
+
+def upload_to_r2(filename, data):
+    """
+    Uploads data to Cloudflare R2 bucket.
+    """
+    try:
+        s3 = boto3.client(
+            's3',
+            endpoint_url=f'https://{CLOUDFLARE_ACCOUNT_ID}.r2.cloudflarestorage.com',
+            aws_access_key_id=AWS_ACCESS_KEY_ID,
+            aws_secret_access_key=AWS_SECRET_ACCESS_KEY
+        )
+        s3.put_object(Bucket=BUCKET_NAME, Key=filename, Body=data)
+        print(f"Uploaded {filename} to R2 bucket {BUCKET_NAME}")
+        return True
+    except Exception as e:
+        print(f"Failed to upload {filename} to R2: {e}")
+        return False
 
 def download_runner(asset_indexes):
     for i, asset in enumerate(asset_indexes):
@@ -76,12 +99,16 @@ def download_runner(asset_indexes):
                 continue
 
             # Save the rotated image data to a file
-            with open(index + ".webp", "wb") as f:
-                f.write(img_data)
-            print(f"Image saved to {index}.webp")
+            filename = index + ".webp"
+            # Upload the image to Cloudflare R2
+            try:
+                upload_to_r2(filename, img_data)
+            except Exception as e:
+                print(f"Error uploading image for {query}: {e}")
+                continue
 
-        import sys
-        sys.exit(0)  # Exit after processing the first asset
+        # import sys
+        # sys.exit(0)  # Exit after processing the first asset
 
 def download_first_image(query, search_key):
     random_buffer = uniform(0.1, 3)  # Random delay between 0.1 and 1.5 seconds
@@ -162,13 +189,12 @@ if __name__ == "__main__":
     start_t = time.time()
 
     dataset = pull_dataset()
-    print(f"Dataset pulled successfully. Took {time.time() - start_t:.2f} seconds.")
+    print(f"Dataset pulled successfully. Total time taken: {time.time() - start_t:.2f} seconds.")
     
     asset_indexes = asset_index_builder(dataset)
-    print(f"Asset indexes built successfully. Took {time.time() - start_t:.2f} seconds.")
+    print(f"Asset indexes built successfully. Total time taken: {time.time() - start_t:.2f} seconds.")
 
     download_runner(asset_indexes)
-    print(f"Image download process completed. Took {time.time() - start_t:.2f} seconds.")
+    print(f"Image download process completed. Total time taken: {time.time() - start_t:.2f} seconds.")
 
-    end_t = time.time()
-    print(f"Total time taken: {end_t - start_t:.2f} seconds")
+    print("All tasks completed successfully.")
