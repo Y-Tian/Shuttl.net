@@ -130,6 +130,11 @@ def download_runner(asset_indexes):
                 log.info(f"Failed to rotate image for {query}. Skipping...")
                 continue
 
+            img_data = add_watermark_and_logo(img_data, watermark_text="shuttl.net", logo_path="shuttl.png")
+            if img_data is None:
+                log.info(f"Failed to add watermark/logo for {query}. Skipping...")
+                continue
+
             # Save the rotated image data to a file
             filename = index + ".webp"
             # Upload the image to Cloudflare R2
@@ -215,6 +220,97 @@ def rotate_webp_data_clockwise(input_image_data, degrees=90):
     except Exception as e:
         log.info(f"An error occurred during image rotation: {e}")
         return None
+    
+def add_watermark_and_logo(image_data, watermark_text="shuttl.net", logo_path="shuttl.png"):
+    """
+    Adds a large, centered semi-transparent text watermark and a logo at 3/4 width and 3/4 height.
+    Args:
+        image_data (bytes): The raw bytes of the input image.
+        watermark_text (str): The text to use as a watermark.
+        logo_path (str): Path to the logo image (PNG with transparency recommended).
+    Returns:
+        bytes: The raw bytes of the processed image.
+    """
+    try:
+        image_stream = io.BytesIO(image_data)
+        with Image.open(image_stream).convert("RGBA") as base:
+            width, height = base.size
+
+            # --- Add large, centered watermark text ---
+            txt_layer = Image.new("RGBA", base.size, (255,255,255,0))
+            from PIL import ImageDraw, ImageFont
+            draw = ImageDraw.Draw(txt_layer)
+
+            # Try to use a large TTF font, fallback to default
+            font_size = int(height * 0.05)
+            font = None
+            font_paths = [
+                "arial.ttf",
+                "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+                "/Library/Fonts/Arial.ttf",
+                "/usr/share/fonts/truetype/freefont/FreeSans.ttf"
+            ]
+            for path in font_paths:
+                try:
+                    font = ImageFont.truetype(path, font_size)
+                    break
+                except Exception:
+                    continue
+            if font is None:
+                log.info("No TTF font found, using default font (may be small).")
+                font = ImageFont.load_default()
+
+            # Get text size
+            try:
+                bbox = draw.textbbox((0, 0), watermark_text, font=font)
+                text_width = bbox[2] - bbox[0]
+                text_height = bbox[3] - bbox[1]
+            except AttributeError:
+                text_width, text_height = font.getsize(watermark_text)
+
+            text_position = ((width - text_width) // 2, (height - text_height) // 2)
+
+            # If using default font and text is too small, draw it multiple times to "scale up"
+            if font == ImageFont.load_default() and text_height < height * 0.10:
+                # Draw the watermark text multiple times to make it more visible
+                for offset in range(-2, 3):
+                    for offset2 in range(-2, 3):
+                        draw.text(
+                            (text_position[0] + offset, text_position[1] + offset2),
+                            watermark_text,
+                            font=font,
+                            fill=(0, 0, 0, 70)
+                        )
+            else:
+                draw.text(
+                    text_position,
+                    watermark_text,
+                    font=font,
+                    fill=(0, 0, 0, 70)
+                )
+
+            # --- Add logo at (3/4 width, 3/4 height) ---
+            try:
+                with Image.open(logo_path).convert("RGBA") as logo:
+                    logo_ratio = logo.width / logo.height
+                    logo_height = int(height * 0.10)
+                    logo_width = int(logo_height * logo_ratio)
+                    logo = logo.resize((logo_width, logo_height), Image.LANCZOS)
+                    logo_x = int(width * 0.75)
+                    logo_y = int(height * 0.75)
+                    logo_x = min(logo_x, width - logo_width)
+                    logo_y = min(logo_y, height - logo_height)
+                    txt_layer.paste(logo, (logo_x, logo_y), logo)
+            except Exception as e:
+                log.info(f"Could not add logo: {e}")
+
+            watermarked = Image.alpha_composite(base, txt_layer)
+            output_stream = io.BytesIO()
+            watermarked.convert("RGB").save(output_stream, format="WEBP")
+            return output_stream.getvalue()
+    except Exception as e:
+        log.info(f"Failed to add watermark/logo: {e}")
+        return image_data
 
 if __name__ == "__main__":
     log.info("Starting the image download process...")
