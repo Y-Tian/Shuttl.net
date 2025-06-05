@@ -7,6 +7,11 @@ import time
 from datetime import datetime
 import boto3
 import os
+from logging import getLogger, INFO, basicConfig
+
+# Configure logging
+basicConfig(level=INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+log = getLogger(__name__)
 
 """
 TODO:
@@ -49,6 +54,27 @@ def asset_index_builder(dataset):
 
     return asset_indexes
 
+def already_uploaded_to_r2(filename):
+    """
+    Checks if a file has already been uploaded to the Cloudflare R2 bucket.
+    """
+    try:
+        s3 = boto3.client(
+            's3',
+            endpoint_url=f'https://{CLOUDFLARE_ACCOUNT_ID}.r2.cloudflarestorage.com',
+            aws_access_key_id=AWS_ACCESS_KEY_ID,
+            aws_secret_access_key=AWS_SECRET_ACCESS_KEY
+        )
+        s3.head_object(Bucket=BUCKET_NAME, Key=filename)
+        log.info(f"{filename} already exists in R2 bucket {BUCKET_NAME}")
+        return True
+    except s3.exceptions.ClientError as e:
+        if e.response['Error']['Code'] == '404':
+            return False
+        else:
+            log.info(f"Error checking {filename} in R2: {e}")
+            return False
+
 def upload_to_r2(filename, data):
     """
     Uploads data to Cloudflare R2 bucket.
@@ -61,19 +87,25 @@ def upload_to_r2(filename, data):
             aws_secret_access_key=AWS_SECRET_ACCESS_KEY
         )
         s3.put_object(Bucket=BUCKET_NAME, Key=filename, Body=data)
-        print(f"Uploaded {filename} to R2 bucket {BUCKET_NAME}")
+        log.info(f"Uploaded {filename} to R2 bucket {BUCKET_NAME}")
         return True
     except Exception as e:
-        print(f"Failed to upload {filename} to R2: {e}")
+        log.info(f"Failed to upload {filename} to R2: {e}")
         return False
 
 def download_runner(asset_indexes):
     for i, asset in enumerate(asset_indexes):
-        print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} - Processing asset {i + 1}/{len(asset_indexes)}: {asset}")
+        log.info(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} - Processing asset {i + 1}/{len(asset_indexes)}: {asset}")
 
         brand = asset['brand']
         query = asset['query']
         index = asset['index']
+
+        # Check if the asset has already been uploaded to R2
+        filename = f"{index}.webp"
+        if already_uploaded_to_r2(filename):
+            log.info(f"Skipping {filename} as it has already been uploaded.")
+            continue
 
         # TODO: Implement logic to handle different brands, only processing Yonex for now
         if brand == "Yonex":
@@ -83,19 +115,19 @@ def download_runner(asset_indexes):
         else:
             continue
 
-        print(f"Processing query: {query}")
+        log.info(f"Processing query: {query}")
 
         # Download the first image for the asset
         img_data = download_first_image(query, search_key)
         if img_data is None:
-            print(f"Failed to download image for {query}. Skipping...")
+            log.info(f"Failed to download image for {query}. Skipping...")
             continue
 
         if brand == "Yonex":
             # Rotate the image 90 degrees clockwise
             img_data = rotate_webp_data_clockwise(img_data, degrees=270)
             if img_data is None:
-                print(f"Failed to rotate image for {query}. Skipping...")
+                log.info(f"Failed to rotate image for {query}. Skipping...")
                 continue
 
             # Save the rotated image data to a file
@@ -104,7 +136,7 @@ def download_runner(asset_indexes):
             try:
                 upload_to_r2(filename, img_data)
             except Exception as e:
-                print(f"Error uploading image for {query}: {e}")
+                log.info(f"Error uploading image for {query}: {e}")
                 continue
 
         # import sys
@@ -123,24 +155,24 @@ def download_first_image(query, search_key):
 
     response = requests.get(search_url, headers=headers)
     if response.status_code != 200:
-        print("Failed to fetch search results")
+        log.info("Failed to fetch search results")
         return
 
     html = response.text
     matches = re.findall(fr'https?://[^"]*{search_key}[^"]+', html)
 
     if not matches:
-        print("No matching URL found.")
+        log.info("No matching URL found.")
         return
 
     first_url = matches[0]
-    print(f"Found image URL: {first_url}")
+    log.info(f"Found image URL: {first_url}")
 
     try:
         img_data = requests.get(first_url, headers=headers).content
         return img_data  # Return the image data instead of saving it
     except Exception as e:
-        print(f"Failed to download image: {e}")
+        log.info(f"Failed to download image: {e}")
         return None
 
 def rotate_webp_data_clockwise(input_image_data, degrees=90):
@@ -181,20 +213,20 @@ def rotate_webp_data_clockwise(input_image_data, degrees=90):
             return rotated_image_data
 
     except Exception as e:
-        print(f"An error occurred during image rotation: {e}")
+        log.info(f"An error occurred during image rotation: {e}")
         return None
 
 if __name__ == "__main__":
-    print("Starting the image download process...")
+    log.info("Starting the image download process...")
     start_t = time.time()
 
     dataset = pull_dataset()
-    print(f"Dataset pulled successfully. Total time taken: {time.time() - start_t:.2f} seconds.")
+    log.info(f"Dataset pulled successfully. Total time taken: {time.time() - start_t:.2f} seconds.")
     
     asset_indexes = asset_index_builder(dataset)
-    print(f"Asset indexes built successfully. Total time taken: {time.time() - start_t:.2f} seconds.")
+    log.info(f"Asset indexes built successfully. Total time taken: {time.time() - start_t:.2f} seconds.")
 
     download_runner(asset_indexes)
-    print(f"Image download process completed. Total time taken: {time.time() - start_t:.2f} seconds.")
+    log.info(f"Image download process completed. Total time taken: {time.time() - start_t:.2f} seconds.")
 
-    print("All tasks completed successfully.")
+    log.info("All tasks completed successfully.")
