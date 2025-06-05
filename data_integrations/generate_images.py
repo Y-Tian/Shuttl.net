@@ -8,6 +8,8 @@ from datetime import datetime
 import boto3
 import os
 from logging import getLogger, INFO, basicConfig
+from bs4 import BeautifulSoup
+import json
 
 # Configure logging
 basicConfig(level=INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -92,6 +94,102 @@ def upload_to_r2(filename, data):
     except Exception as e:
         log.info(f"Failed to upload {filename} to R2: {e}")
         return False
+    
+def process_li_ning(query, index):
+    """
+    Processes a Li-Ning query to download the first image and upload it to R2.
+    """
+    search_prepend = "lining.studio"
+    query = f"{search_prepend} {query}"
+    search_key = "lining.studio"
+
+    log.info(f"Processing Li-Ning query: {query}")
+
+    # Get the first result URL from the search
+    url = get_search_first_result(query, search_key)
+    if url is None:
+        log.info(f"Failed to find first result for {query}. Skipping...")
+        return None
+
+    """
+    Scrapes the second <script type="application/ld+json"> from the given URL,
+    parses the JSON, and returns the value of the 'image' key.
+    """
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+                      "(KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+    }
+    response = requests.get(url, headers=headers)
+    if response.status_code != 200:
+        log.info(f"Failed to fetch page: {url}")
+        return None
+
+    soup = BeautifulSoup(response.text, "html.parser")
+    scripts = soup.find_all("script", type="application/ld+json")
+    if len(scripts) < 2:
+        log.info("Less than 2 <script type='application/ld+json'> elements found.")
+        return None
+
+    try:
+        data = json.loads(scripts[1].string)
+        image_url = data.get("image")
+        if isinstance(image_url, list):
+            image_url = image_url[-1]  # Get the last image URL if it's a list
+        log.info(f"Found Li-Ning image URL: {image_url}")
+        
+        img_data = requests.get(image_url, headers=headers).content
+        img_data = add_watermark_and_logo(img_data, watermark_text="shuttl.net", logo_path="shuttl.png")
+        if img_data is None:
+            log.info(f"Failed to add watermark/logo for {query}. Skipping...")
+            return
+
+        # Save the rotated image data to a file
+        filename = index + ".webp"
+        
+        # Upload the image to Cloudflare R2
+        try:
+            upload_to_r2(filename, img_data)
+        except Exception as e:
+            log.info(f"Error uploading image for {query}: {e}")
+    except Exception as e:
+        log.info(f"Error parsing JSON or extracting image: {e}")
+        return None
+    
+def process_yonex(query, index):
+    """
+    Processes a Yonex query to download the first image and upload it to R2.
+    """
+    search_prepend = "sunriseclick"
+    query = f"{search_prepend} {query}"
+    search_key = "cdn-sunriseclick"
+
+    log.info(f"Processing query: {query}")
+
+    # Download the first image for the asset
+    img_data = download_first_image(query, search_key)
+    if img_data is None:
+        log.info(f"Failed to download image for {query}. Skipping...")
+        return
+
+    # Rotate the image 90 degrees clockwise
+    img_data = rotate_webp_data_clockwise(img_data, degrees=270)
+    if img_data is None:
+        log.info(f"Failed to rotate image for {query}. Skipping...")
+        return
+
+    img_data = add_watermark_and_logo(img_data, watermark_text="shuttl.net", logo_path="shuttl.png")
+    if img_data is None:
+        log.info(f"Failed to add watermark/logo for {query}. Skipping...")
+        return
+
+    # Save the rotated image data to a file
+    filename = index + ".webp"
+    
+    # Upload the image to Cloudflare R2
+    try:
+        upload_to_r2(filename, img_data)
+    except Exception as e:
+        log.info(f"Error uploading image for {query}: {e}")
 
 def download_runner(asset_indexes):
     for i, asset in enumerate(asset_indexes):
@@ -109,43 +207,46 @@ def download_runner(asset_indexes):
 
         # TODO: Implement logic to handle different brands, only processing Yonex for now
         if brand == "Yonex":
-            search_prepend = "sunriseclick"
-            query = f"{search_prepend} {query}"
-            search_key = "cdn-sunriseclick"
+            process_yonex(query, index)
+        elif brand == "Li-Ning":
+            process_li_ning(query, index)
         else:
             continue
 
-        log.info(f"Processing query: {query}")
+def get_search_first_result(query, search_key):
+    """
+    Downloads the first webpage result HTML from a Google search result.
+    Args:
+        query (str): The search query.
+        search_key (str): A key to identify the image URL in the HTML.
+    Returns:
+        str: The HTML content of the first search result page.
+    """
 
-        # Download the first image for the asset
-        img_data = download_first_image(query, search_key)
-        if img_data is None:
-            log.info(f"Failed to download image for {query}. Skipping...")
-            continue
+    search_url = f"https://www.google.com/search?q={query.replace(' ', '+')}&num=1"
 
-        if brand == "Yonex":
-            # Rotate the image 90 degrees clockwise
-            img_data = rotate_webp_data_clockwise(img_data, degrees=270)
-            if img_data is None:
-                log.info(f"Failed to rotate image for {query}. Skipping...")
-                continue
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+                      "(KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+    }
 
-            img_data = add_watermark_and_logo(img_data, watermark_text="shuttl.net", logo_path="shuttl.png")
-            if img_data is None:
-                log.info(f"Failed to add watermark/logo for {query}. Skipping...")
-                continue
+    response = requests.get(search_url, headers=headers)
+    if response.status_code != 200:
+        log.info("Failed to fetch search results")
+        return None
 
-            # Save the rotated image data to a file
-            filename = index + ".webp"
-            # Upload the image to Cloudflare R2
-            try:
-                upload_to_r2(filename, img_data)
-            except Exception as e:
-                log.info(f"Error uploading image for {query}: {e}")
-                continue
+    html = response.text
+    print(html)
+    matches = re.findall(fr'https?://[^"]*{search_key}[^"]+', html)
 
-        # import sys
-        # sys.exit(0)  # Exit after processing the first asset
+    if not matches:
+        log.info("No matching URL found.")
+        return None
+
+    first_url = matches[0]
+    log.info(f"Found URL: {first_url}")
+    
+    return first_url
 
 def download_first_image(query, search_key):
     random_buffer = uniform(0.1, 3)  # Random delay between 0.1 and 1.5 seconds
