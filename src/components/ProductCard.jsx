@@ -1,21 +1,34 @@
 // src/components/ProductCard.jsx
-import React from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFire, faShieldHalved, faWeightHanging, faGripLines, faRulerCombined, faLocationDot } from '@fortawesome/free-solid-svg-icons';
+import React from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faFire,
+  faShieldHalved,
+  faWeightHanging,
+  faGripLines,
+  faRulerCombined,
+  faLocationDot,
+} from "@fortawesome/free-solid-svg-icons";
 
 function ProductCard({ racket }) {
   // Helper function to map racket type to an icon
   const getTypeIcon = (type) => {
-    if ((type || "").includes("Offensive") || (type || "").includes("Power")) return faFire;
-    if ((type || "").includes("Defensive") || (type || "").includes("Speed")) return faShieldHalved;
+    if ((type || "").includes("Offensive") || (type || "").includes("Power"))
+      return faFire;
+    if ((type || "").includes("Defensive") || (type || "").includes("Speed"))
+      return faShieldHalved;
     return faRulerCombined; // All-around/Control
   };
 
   return (
     <div className="product-card">
       <h3>{racket.subModel}</h3>
-      <p><strong>Series:</strong> {racket.model}</p>
-      <p><strong>Year:</strong> {racket.year}</p>
+      <p>
+        <strong>Series:</strong> {racket.model}
+      </p>
+      <p>
+        <strong>Year:</strong> {racket.year}
+      </p>
 
       <div className="specs-grid">
         <div className="spec-item">
@@ -39,14 +52,18 @@ function ProductCard({ racket }) {
           <span>Made in {racket.manufacturingCountry}</span>
         </div>
       </div>
-      
+
       <p className="price-tier">Price Tier: {racket.priceTier}</p>
 
       {racket.primaryColour !== "N/A" && (
-        <p><strong>Colors:</strong> {racket.primaryColour}</p>
+        <p>
+          <strong>Colors:</strong> {racket.primaryColour}
+        </p>
       )}
       {racket.signaturePlayers !== "N/A" && (
-        <p><strong>Signature Player:</strong> {racket.signaturePlayers}</p>
+        <p>
+          <strong>Signature Player:</strong> {racket.signaturePlayers}
+        </p>
       )}
       <p className="notes">{racket.notes}</p>
     </div>

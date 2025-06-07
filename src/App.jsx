@@ -9,7 +9,7 @@ import { ShoesDisplay } from "./pages/Shoes";
 import { BagsDisplay } from "./pages/Bags";
 import { ShuttlesDisplay } from "./pages/Shuttles";
 import { StringsDisplay } from "./pages/Strings";
-import { TrainingDisplay} from "./pages/Training";
+import { TrainingDisplay } from "./pages/Training";
 
 function App() {
   const [allRacketsData, setAllRacketsData] = useState([]);
@@ -43,8 +43,14 @@ function App() {
       <Header />
       <main className="main-content">
         <Routes>
-          <Route path="/" element={<RacketsDisplay allRacketsData={allRacketsData} />} />
-          <Route path="/rackets" element={<RacketsDisplay allRacketsData={allRacketsData} />} />
+          <Route
+            path="/"
+            element={<RacketsDisplay allRacketsData={allRacketsData} />}
+          />
+          <Route
+            path="/rackets"
+            element={<RacketsDisplay allRacketsData={allRacketsData} />}
+          />
           <Route path="/shoes" element={<ShoesDisplay />} />
           <Route path="/bags" element={<BagsDisplay />} />
           <Route path="/shuttles" element={<ShuttlesDisplay />} />

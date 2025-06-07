@@ -1,5 +1,5 @@
-import React from 'react';
-import { WorkInProgress } from '../components/WorkInProgress';
+import React from "react";
+import { WorkInProgress } from "../components/WorkInProgress";
 
 export function BagsDisplay() {
   return (
