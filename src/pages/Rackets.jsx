@@ -14,7 +14,7 @@ const getUniqueBrands = (data) => {
   return brands;
 };
 
-export function RacketsDisplay({allRacketsData}) {
+export function RacketsDisplay({ allRacketsData }) {
   const uniqueYears = getUniqueYears(allRacketsData);
   const allAvailableBrands = getUniqueBrands(allRacketsData);
 

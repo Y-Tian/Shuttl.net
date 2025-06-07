@@ -5,6 +5,11 @@ import Header from "./components/Header";
 import Footer from "./components/Footer";
 import { GOOGLE_SHEETS_DB_URL } from "./config/constants";
 import { RacketsDisplay } from "./pages/Rackets";
+import { ShoesDisplay } from "./pages/Shoes";
+import { BagsDisplay } from "./pages/Bags";
+import { ShuttlesDisplay } from "./pages/Shuttles";
+import { StringsDisplay } from "./pages/Strings";
+import { TrainingDisplay} from "./pages/Training";
 
 function App() {
   const [allRacketsData, setAllRacketsData] = useState([]);
@@ -39,6 +44,12 @@ function App() {
       <main className="main-content">
         <Routes>
           <Route path="/" element={<RacketsDisplay allRacketsData={allRacketsData} />} />
+          <Route path="/rackets" element={<RacketsDisplay allRacketsData={allRacketsData} />} />
+          <Route path="/shoes" element={<ShoesDisplay />} />
+          <Route path="/bags" element={<BagsDisplay />} />
+          <Route path="/shuttles" element={<ShuttlesDisplay />} />
+          <Route path="/training" element={<TrainingDisplay />} />
+          <Route path="/strings" element={<StringsDisplay />} />
         </Routes>
       </main>
       <Footer />

@@ -1,10 +1,10 @@
 import React from 'react';
 import { WorkInProgress } from '../components/WorkInProgress';
 
-export function TrainingDisplay() {
+export function StringsDisplay() {
   return (
-    <div className="shoes-display">
-      <h1>Training Section</h1>
+    <div className="strings-display">
+      <h1>Strings Section</h1>
       <WorkInProgress />
     </div>
   );
