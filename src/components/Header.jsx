@@ -1,6 +1,14 @@
-import React from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronRight, faShoePrints, faBagShopping, faFeather } from '@fortawesome/free-solid-svg-icons';
+import React from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faChevronRight,
+  faShoePrints,
+  faBagShopping,
+  faFeather,
+  faCircleNotch,
+  faDumbbell,
+} from "@fortawesome/free-solid-svg-icons";
+import { NavLink } from "react-router-dom";
 
 function Header() {
   return (
@@ -9,24 +17,52 @@ function Header() {
       <nav>
         <ul>
           <li>
-            <a href="#" className="active">
+            <NavLink
+              to="/rackets"
+              className={({ isActive }) => (isActive ? "active" : undefined)}
+            >
               <FontAwesomeIcon icon={faChevronRight} /> Rackets
-            </a>
+            </NavLink>
           </li>
           <li>
-            <a href="#">
+            <NavLink
+              to="/shoes"
+              className={({ isActive }) => (isActive ? "active" : undefined)}
+            >
               <FontAwesomeIcon icon={faShoePrints} /> Shoes
-            </a>
+            </NavLink>
           </li>
           <li>
-            <a href="#">
+            <NavLink
+              to="/bags"
+              className={({ isActive }) => (isActive ? "active" : undefined)}
+            >
               <FontAwesomeIcon icon={faBagShopping} /> Bags
-            </a>
+            </NavLink>
           </li>
           <li>
-            <a href="#">
+            <NavLink
+              to="/shuttles"
+              className={({ isActive }) => (isActive ? "active" : undefined)}
+            >
               <FontAwesomeIcon icon={faFeather} /> Shuttles
-            </a>
+            </NavLink>
+          </li>
+          <li>
+            <NavLink
+              to="/strings"
+              className={({ isActive }) => (isActive ? "active" : undefined)}
+            >
+              <FontAwesomeIcon icon={faCircleNotch} /> Strings
+            </NavLink>
+          </li>
+          <li>
+            <NavLink
+              to="/training"
+              className={({ isActive }) => (isActive ? "active" : undefined)}
+            >
+              <FontAwesomeIcon icon={faDumbbell} /> Training
+            </NavLink>
           </li>
         </ul>
       </nav>

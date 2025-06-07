@@ -1,10 +1,23 @@
-import React from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFire, faShieldHalved, faGripLines, faWeightHanging, faRulerCombined } from '@fortawesome/free-solid-svg-icons';
-import { CLOUDFLARE_IMAGES_TRANSFORM_BASE_URL, MINI_ICON_TRANSFORM, DEFAULT_RACKET_IMAGE, DEFAULT_RACKET_IMAGE_EXT } from '../config/constants';
+import React from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faFire,
+  faShieldHalved,
+  faGripLines,
+  faWeightHanging,
+  faRulerCombined,
+} from "@fortawesome/free-solid-svg-icons";
+import {
+  CLOUDFLARE_IMAGES_TRANSFORM_BASE_URL,
+  MINI_ICON_TRANSFORM,
+  DEFAULT_RACKET_IMAGE,
+  DEFAULT_RACKET_IMAGE_EXT,
+} from "../config/constants";
 
-function GenerateImage({racket}) {
-  const racketIndex = `${racket.year}_${racket.brand}_${racket.subModel}`.replace(/\s+/g, '_').toLowerCase();
+function GenerateImage({ racket }) {
+  const racketIndex = `${racket.year}_${racket.brand}_${racket.subModel}`
+    .replace(/\s+/g, "_")
+    .toLowerCase();
   const racketImageName = `${CLOUDFLARE_IMAGES_TRANSFORM_BASE_URL}${MINI_ICON_TRANSFORM}${racketIndex}${DEFAULT_RACKET_IMAGE_EXT}`;
   const racketAltTag = `${racket.year} ${racket.brand} ${racket.model} ${racket.subModel} mini icon badminton racket`;
 
@@ -17,18 +30,21 @@ function GenerateImage({racket}) {
       onError={(e) => {
         e.target.onerror = null; // Prevents infinite loop if fallback also fails
         e.target.src = `${DEFAULT_RACKET_IMAGE}`; // Fallback to default image
-        console.warn(`Image not found for ${racketIndex}, using default image.`);
+        console.warn(
+          `Image not found for ${racketIndex}, using default image.`
+        );
       }}
     />
-  )
+  );
 }
 
 function CompactProductCard({ racket }) {
-  // Helper function to map racket type to an icon
   const getTypeIcon = (type) => {
-    if ((type || "").includes("Offensive") || (type || "").includes("Power")) return faFire;
-    if ((type || "").includes("Defensive") || (type || "").includes("Speed")) return faShieldHalved;
-    return faRulerCombined; // All-around/Control
+    if ((type || "").includes("Offensive") || (type || "").includes("Power"))
+      return faFire;
+    if ((type || "").includes("Defensive") || (type || "").includes("Speed"))
+      return faShieldHalved;
+    return faRulerCombined;
   };
 
   return (
@@ -43,8 +59,8 @@ function CompactProductCard({ racket }) {
       </div>
       <div className="card-specs">
         <div className="spec-item">
-          <FontAwesomeIcon icon={getTypeIcon(racket.Type)} />
-          <span>{racket.Type}</span> {/* Show primary type */}
+          <FontAwesomeIcon icon={getTypeIcon(racket.type)} />
+          <span>{racket.type}</span>
         </div>
         <div className="spec-item">
           <FontAwesomeIcon icon={faGripLines} />
@@ -52,7 +68,7 @@ function CompactProductCard({ racket }) {
         </div>
         <div className="spec-item">
           <FontAwesomeIcon icon={faWeightHanging} />
-          <span>Weight: {racket.weights}</span>
+          <span>{racket.weights}</span>
         </div>
       </div>
       <span className="card-price-tier">{racket.priceTier}</span>

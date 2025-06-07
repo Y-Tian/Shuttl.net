@@ -1,27 +1,20 @@
-import React, { useState, useEffect } from 'react';
-import Papa from 'papaparse';
-import Header from './components/Header';
-import Footer from './components/Footer';
-import YearSelector from './components/YearSelector';
-import BrandSelector from './components/BrandSelector';
-import ProductList from './components/ProductList';
-import { GOOGLE_SHEETS_DB_URL } from './config/constants';
-
-// Helper functions (unchanged)
-const getUniqueYears = (data) => {
-  const years = [...new Set(data.map(racket => racket.year))].sort((a, b) => b - a);
-  return ["All Years", ...years];
-};
-const getUniqueBrands = (data) => {
-  const brands = [...new Set(data.map(racket => racket.brand))].sort();
-  return brands;
-};
+import React, { useState, useEffect } from "react";
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import Papa from "papaparse";
+import Header from "./components/Header";
+import Footer from "./components/Footer";
+import { GOOGLE_SHEETS_DB_URL } from "./config/constants";
+import { RacketsDisplay } from "./pages/Rackets";
+import { ShoesDisplay } from "./pages/Shoes";
+import { BagsDisplay } from "./pages/Bags";
+import { ShuttlesDisplay } from "./pages/Shuttles";
+import { StringsDisplay } from "./pages/Strings";
+import { TrainingDisplay } from "./pages/Training";
 
 function App() {
   const [allRacketsData, setAllRacketsData] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Fetch and parse CSV from Google Sheets
   useEffect(() => {
     setLoading(true);
     Papa.parse(GOOGLE_SHEETS_DB_URL, {
@@ -37,56 +30,36 @@ function App() {
     });
   }, []);
 
-  const uniqueYears = getUniqueYears(allRacketsData);
-  const allAvailableBrands = getUniqueBrands(allRacketsData);
-
-  const [selectedYear, setSelectedYear] = useState(uniqueYears[0] || "All Years");
-  const [selectedBrands, setSelectedBrands] = useState(allAvailableBrands);
-
-  useEffect(() => {
-    if (selectedBrands.length === 0 && allAvailableBrands.length > 0) {
-      setSelectedBrands(allAvailableBrands);
-    }
-  }, [allAvailableBrands]);
-
-  const filteredRackets = allRacketsData.filter(racket => {
-    const matchesYear = selectedYear === "All Years" || racket.year === selectedYear;
-    const matchesBrand = selectedBrands.length === 0 || selectedBrands.includes(racket.brand);
-    return matchesYear && matchesBrand;
-  }).sort((a, b) => {
-    if (selectedYear === "All Years") {
-      return b.year - a.year;
-    }
-    return 0;
-  });
-
-   if (loading) return (
-    <div className="loading-container">
-      <div className="circular-loader"></div>
-      <p>Loading Racket Data...</p>
-    </div>
-  );
+  if (loading)
+    return (
+      <div className="loading-container">
+        <div className="circular-loader"></div>
+        <p>Loading Racket Data...</p>
+      </div>
+    );
 
   return (
-    <>
+    <Router>
       <Header />
       <main className="main-content">
-        <div className="controls-container">
-          <YearSelector
-            years={uniqueYears}
-            selectedYear={selectedYear}
-            onSelectYear={setSelectedYear}
+        <Routes>
+          <Route
+            path="/"
+            element={<RacketsDisplay allRacketsData={allRacketsData} />}
           />
-          <BrandSelector
-            brands={allAvailableBrands}
-            selectedBrands={selectedBrands}
-            onSelectBrands={setSelectedBrands}
+          <Route
+            path="/rackets"
+            element={<RacketsDisplay allRacketsData={allRacketsData} />}
           />
-        </div>
-        <ProductList products={filteredRackets} categoryTitle={`Badminton Rackets (${selectedYear})`} />
+          <Route path="/shoes" element={<ShoesDisplay />} />
+          <Route path="/bags" element={<BagsDisplay />} />
+          <Route path="/shuttles" element={<ShuttlesDisplay />} />
+          <Route path="/training" element={<TrainingDisplay />} />
+          <Route path="/strings" element={<StringsDisplay />} />
+        </Routes>
       </main>
       <Footer />
-    </>
+    </Router>
   );
 }
 

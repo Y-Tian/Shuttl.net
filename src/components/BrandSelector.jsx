@@ -1,6 +1,10 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTag, faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
+import React, { useState, useRef, useEffect } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faTag,
+  faChevronDown,
+  faChevronUp,
+} from "@fortawesome/free-solid-svg-icons";
 
 function BrandSelector({ brands, selectedBrands, onSelectBrands }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -35,15 +39,21 @@ function BrandSelector({ brands, selectedBrands, onSelectBrands }) {
     if (selectedBrands.length === brands.length) {
       return "All Brands";
     }
-    return selectedBrands.join(', ');
+    return selectedBrands.join(", ");
   };
 
   return (
     <div className="brand-selector" ref={dropdownRef}>
-      <button className="brand-selector-display" onClick={() => setIsOpen(!isOpen)}>
+      <button
+        className="brand-selector-display"
+        onClick={() => setIsOpen(!isOpen)}
+      >
         <FontAwesomeIcon icon={faTag} className="brand-icon" />
         <span>{getDisplayValue()}</span>
-        <FontAwesomeIcon icon={isOpen ? faChevronUp : faChevronDown} className="toggle-icon" />
+        <FontAwesomeIcon
+          icon={isOpen ? faChevronUp : faChevronDown}
+          className="toggle-icon"
+        />
       </button>
 
       {isOpen && (
