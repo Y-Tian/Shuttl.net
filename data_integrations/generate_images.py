@@ -236,7 +236,7 @@ def get_search_first_result(query, search_key):
         return None
 
     html = response.text
-    print(html)
+    # print(html)
     matches = re.findall(fr'https?://[^"]*{search_key}[^"]+', html)
 
     if not matches:
