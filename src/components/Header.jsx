@@ -1,6 +1,7 @@
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronRight, faShoePrints, faBagShopping, faFeather, faCircleNotch, faDumbbell } from '@fortawesome/free-solid-svg-icons';
+import { NavLink } from 'react-router-dom';
 
 function Header() {
   return (
@@ -9,34 +10,34 @@ function Header() {
       <nav>
         <ul>
           <li>
-            <a href="rackets" className="active">
+            <NavLink to="/rackets" className={({ isActive }) => isActive ? 'active' : undefined}>
               <FontAwesomeIcon icon={faChevronRight} /> Rackets
-            </a>
+            </NavLink>
           </li>
           <li>
-            <a href="shoes">
+            <NavLink to="/shoes" className={({ isActive }) => isActive ? 'active' : undefined}>
               <FontAwesomeIcon icon={faShoePrints} /> Shoes
-            </a>
+            </NavLink>
           </li>
           <li>
-            <a href="bags">
+            <NavLink to="/bags" className={({ isActive }) => isActive ? 'active' : undefined}>
               <FontAwesomeIcon icon={faBagShopping} /> Bags
-            </a>
+            </NavLink>
           </li>
           <li>
-            <a href="shuttles">
+            <NavLink to="/shuttles" className={({ isActive }) => isActive ? 'active' : undefined}>
               <FontAwesomeIcon icon={faFeather} /> Shuttles
-            </a>
+            </NavLink>
           </li>
           <li>
-            <a href="strings">
+            <NavLink to="/strings" className={({ isActive }) => isActive ? 'active' : undefined}>
               <FontAwesomeIcon icon={faCircleNotch} /> Strings
-            </a>
+            </NavLink>
           </li>
           <li>
-            <a href="training">
+            <NavLink to="/training" className={({ isActive }) => isActive ? 'active' : undefined}>
               <FontAwesomeIcon icon={faDumbbell} /> Training
-            </a>
+            </NavLink>
           </li>
         </ul>
       </nav>
