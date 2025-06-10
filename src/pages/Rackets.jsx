@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import YearSelector from "../components/YearSelector";
 import BrandSelector from "../components/BrandSelector";
 import ProductList from "../components/ProductList";
+import ProductCard from "../components/ProductCard";
 
 const getUniqueYears = (data) => {
   const years = [...new Set(data.map((racket) => racket.year))].sort(
@@ -22,6 +23,7 @@ export function RacketsDisplay({ allRacketsData }) {
     uniqueYears[0] || "All Years"
   );
   const [selectedBrands, setSelectedBrands] = useState(allAvailableBrands);
+  const [modalRacket, setModalRacket] = useState(null);
 
   useEffect(() => {
     if (selectedBrands.length === 0 && allAvailableBrands.length > 0) {
@@ -44,6 +46,13 @@ export function RacketsDisplay({ allRacketsData }) {
       return 0;
     });
 
+  const handleCardClick = (racket) => {
+    setModalRacket(racket);
+  };
+  const handleCloseModal = () => {
+    setModalRacket(null);
+  };
+
   return (
     <div>
       <div className="controls-container">
@@ -61,7 +70,18 @@ export function RacketsDisplay({ allRacketsData }) {
       <ProductList
         products={filteredRackets}
         categoryTitle={`Badminton Rackets (${selectedYear})`}
+        onCardClick={handleCardClick}
       />
+      {modalRacket && (
+        <div className="modal-overlay" onClick={handleCloseModal}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <button className="modal-close" onClick={handleCloseModal}>
+              &times;
+            </button>
+            <ProductCard racket={modalRacket} />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

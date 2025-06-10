@@ -38,7 +38,7 @@ function GenerateImage({ racket }) {
   );
 }
 
-function CompactProductCard({ racket }) {
+function CompactProductCard({ racket, onClick }) {
   const getTypeIcon = (type) => {
     if ((type || "").includes("Offensive") || (type || "").includes("Power"))
       return faFire;
@@ -48,7 +48,11 @@ function CompactProductCard({ racket }) {
   };
 
   return (
-    <div className="compact-product-card">
+    <div
+      className="compact-product-card"
+      onClick={onClick}
+      style={{ cursor: "pointer" }}
+    >
       <div className="card-header">
         <span className="card-year">{racket.year}</span>
         <h3 className="card-title">{racket.subModel}</h3>
@@ -72,7 +76,6 @@ function CompactProductCard({ racket }) {
         </div>
       </div>
       <span className="card-price-tier">{racket.priceTier}</span>
-      {/* Future: Add an onClick handler here to open a detailed modal */}
     </div>
   );
 }
