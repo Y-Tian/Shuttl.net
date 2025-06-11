@@ -13,7 +13,7 @@ import { NavLink } from "react-router-dom";
 function Header() {
   return (
     <header className="header">
-      <h1>Shuttl</h1>
+      <h1>Shuttl - Under Development</h1>
       <nav>
         <ul>
           <li>
