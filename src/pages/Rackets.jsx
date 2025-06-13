@@ -24,6 +24,7 @@ export function RacketsDisplay({ allRacketsData }) {
   );
   const [selectedBrands, setSelectedBrands] = useState(allAvailableBrands);
   const [modalRacket, setModalRacket] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     if (selectedBrands.length === 0 && allAvailableBrands.length > 0) {
@@ -37,7 +38,14 @@ export function RacketsDisplay({ allRacketsData }) {
         selectedYear === "All Years" || racket.year === selectedYear;
       const matchesBrand =
         selectedBrands.length === 0 || selectedBrands.includes(racket.brand);
-      return matchesYear && matchesBrand;
+      // Search by subModel, model, or brand (case-insensitive)
+      const search = searchTerm.trim().toLowerCase();
+      const matchesSearch =
+        !search ||
+        (racket.subModel && racket.subModel.toLowerCase().includes(search)) ||
+        (racket.model && racket.model.toLowerCase().includes(search)) ||
+        (racket.brand && racket.brand.toLowerCase().includes(search));
+      return matchesYear && matchesBrand && matchesSearch;
     })
     .sort((a, b) => {
       if (selectedYear === "All Years") {
@@ -55,17 +63,43 @@ export function RacketsDisplay({ allRacketsData }) {
 
   return (
     <div>
-      <div className="controls-container">
-        <YearSelector
-          years={uniqueYears}
-          selectedYear={selectedYear}
-          onSelectYear={setSelectedYear}
+      <div
+        className="controls-container"
+        style={{ flexDirection: "column", gap: "1rem" }}
+      >
+        <input
+          type="text"
+          placeholder="Search rackets by name..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          style={{
+            padding: "0.5rem 1rem",
+            border: "1px solid #ddd",
+            borderRadius: "8px",
+            fontSize: "1rem",
+            width: "100%",
+            maxWidth: "400px",
+          }}
         />
-        <BrandSelector
-          brands={allAvailableBrands}
-          selectedBrands={selectedBrands}
-          onSelectBrands={setSelectedBrands}
-        />
+        <div
+          style={{
+            display: "flex",
+            gap: "1.5rem",
+            flexWrap: "wrap",
+            alignItems: "center",
+          }}
+        >
+          <YearSelector
+            years={uniqueYears}
+            selectedYear={selectedYear}
+            onSelectYear={setSelectedYear}
+          />
+          <BrandSelector
+            brands={allAvailableBrands}
+            selectedBrands={selectedBrands}
+            onSelectBrands={setSelectedBrands}
+          />
+        </div>
       </div>
       <ProductList
         products={filteredRackets}
