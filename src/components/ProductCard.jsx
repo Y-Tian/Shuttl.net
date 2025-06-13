@@ -20,6 +20,17 @@ function ProductCard({ racket }) {
     return faRulerCombined; // All-around/Control
   };
 
+  // Map brand to official site
+  const getOfficialSite = (brand) => {
+    if (!brand) return null;
+    const b = brand.toLowerCase();
+    if (b.includes("yonex")) return "https://www.yonex.com";
+    if (b.includes("victor")) return "https://www.victorsport.com";
+    if (b.includes("li-ning") || b.includes("lining")) return "https://www.lining.com";
+    return null;
+  };
+  const officialSite = getOfficialSite(racket.brand);
+
   return (
     <div className="product-card">
       <h3>{racket.subModel}</h3>
@@ -66,6 +77,15 @@ function ProductCard({ racket }) {
         </p>
       )}
       <p className="notes">{racket.notes}</p>
+      {officialSite && (
+        <a
+          href={officialSite}
+          target="_blank"
+          style={{ display: "block", marginTop: "1rem", color: "#00bcd4", fontWeight: 600 }}
+        >
+          Visit Official Site
+        </a>
+      )}
     </div>
   );
 }
